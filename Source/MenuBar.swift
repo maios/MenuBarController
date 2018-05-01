@@ -8,7 +8,14 @@
 
 import UIKit
 
+@objc
+public protocol MenuBarDelegate {
+    @objc optional func menuBar(_ menuBar: MenuBar, didSelect item: MenuBarItem)
+}
+
 open class MenuBar: UIView {
+
+    open weak var delegate: MenuBarDelegate? = nil
 
     // MARK: Initializations
 
@@ -48,7 +55,7 @@ open class MenuBar: UIView {
         NSLayoutConstraint.activate(constraints)
     }
 
-    // MARK: Data population
+    // MARK: Data populate
 
     open func reset() {
         for arrangedSubview in itemsStackView.arrangedSubviews {
@@ -58,6 +65,9 @@ open class MenuBar: UIView {
 
     open func add(item: MenuBarItem) {
         itemsStackView.addArrangedSubview(item.view)
+        item.tapHandler = { item in
+            self.delegate?.menuBar?(self, didSelect: item)
+        }
     }
 
     open func add(items: [MenuBarItem]) {
